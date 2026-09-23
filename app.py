@@ -501,6 +501,13 @@ def apply_styles():
             margin-top: .4rem;
         }
 
+        .magic-hint {
+            font-size: 1.02rem;
+            font-weight: 600;
+            color: var(--soft);
+            margin-top: .35rem;
+        }
+
         .stProgress > div > div > div > div {
             background: linear-gradient(90deg, var(--coral), var(--sunny), var(--mint));
             border-radius: 999px;
@@ -670,13 +677,21 @@ def render_message(text, kind="tip"):
     st.markdown(f'<div class="{css_class}">{text}</div>', unsafe_allow_html=True)
 
 
-def render_progress(placeholder, progress_bar, emoji, message, percent):
-    """Show one child-friendly step of the magic while the models work."""
+def render_progress(placeholder, progress_bar, emoji, message, percent, hint=""):
+    """
+    Show one child-friendly step of the magic while the models work.
+
+    The optional hint tells the child that a longer wait is expected, so that
+    the slowest stage does not look as if nothing is happening.
+    """
+    hint_html = f'<div class="magic-hint">{hint}</div>' if hint else ""
+
     placeholder.markdown(
         f"""
         <div class="magic-step">
             <span class="magic-emoji">{emoji}</span>
             <div class="magic-text">{message}</div>
+            {hint_html}
         </div>
         """,
         unsafe_allow_html=True,
@@ -788,7 +803,9 @@ def main():
         total_start = time.perf_counter()
 
         # Wake the models up (only the very first time).
-        render_progress(progress_placeholder, progress_bar, "🌙", "Waking up the story elves...", 5)
+        render_progress(progress_placeholder, progress_bar, "🌙",
+                        "Waking up the story elves...", 5,
+                        "They are still a little sleepy!")
         try:
             stage_start = time.perf_counter()
             models = load_models()
@@ -829,7 +846,9 @@ def main():
             return
 
         # Stage 2 - imagine the story.
-        render_progress(progress_placeholder, progress_bar, "💭", "Imagining your adventure...", 55)
+        render_progress(progress_placeholder, progress_bar, "💭",
+                        "Imagining your adventure...", 55,
+                        "Good stories take a little while to grow. Almost there!")
         try:
             stage_start = time.perf_counter()
             story = text2story(caption, models["story"])
@@ -861,8 +880,9 @@ def main():
             stage_start = time.perf_counter()
             audio, sampling_rate = text2audio(story, models["audio"])
             st.session_state["audio_bytes"] = audio_to_wav_bytes(audio, sampling_rate)
+            seconds_of_speech = np.size(audio) / float(sampling_rate)
             log_stage("text2audio", time.perf_counter() - stage_start,
-                      f"({len(audio) if hasattr(audio, '__len__') else 0} samples)")
+                      f"({seconds_of_speech:.1f}s of speech)")
         except Exception:
             # The story is still perfectly readable without narration.
             st.session_state["audio_bytes"] = None
