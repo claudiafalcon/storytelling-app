@@ -1,3 +1,7 @@
+# Install the CPU build of PyTorch. Streamlit Community Cloud has no GPU, and
+# the default PyPI wheel pulls about 2.5 GB of unused CUDA libraries.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 # Web application framework
 streamlit>=1.37
 

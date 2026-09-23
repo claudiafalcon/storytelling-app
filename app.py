@@ -20,7 +20,9 @@ Pre-trained models (Hugging Face Transformers pipelines):
 
 import html
 import io
+import logging
 import os
+import time
 import wave
 
 import numpy as np
@@ -28,6 +30,27 @@ import streamlit as st
 import torch
 from PIL import Image, UnidentifiedImageError
 from transformers import pipeline
+
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
+
+# Timing information is written to the application log, never to the screen,
+# so that the child never sees technical details. On Streamlit Community Cloud
+# these messages appear under "Manage app".
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+)
+
+logger = logging.getLogger("storytelling")
+
+
+def log_stage(stage, seconds, detail=""):
+    """Record how long one stage of the application took."""
+    logger.info("%-14s %7.2fs %s", stage, seconds, detail)
+
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -746,7 +769,7 @@ def main():
 
     left, middle, right = st.columns([1, 3, 1])
     with middle:
-        st.image(image, use_container_width=True)
+        st.image(image, width="stretch")
         st.markdown(
             '<div class="frame-caption">What a lovely picture! 💛</div>',
             unsafe_allow_html=True,
@@ -762,10 +785,15 @@ def main():
         progress_placeholder = st.empty()
         progress_bar = st.progress(0)
 
+        total_start = time.perf_counter()
+
         # Wake the models up (only the very first time).
         render_progress(progress_placeholder, progress_bar, "🌙", "Waking up the story elves...", 5)
         try:
+            stage_start = time.perf_counter()
             models = load_models()
+            log_stage("load_models", time.perf_counter() - stage_start,
+                      "(downloads and builds the pipelines on the first run only)")
         except Exception:
             progress_placeholder.empty()
             progress_bar.empty()
@@ -778,7 +806,10 @@ def main():
         # Stage 1 - look at the picture.
         render_progress(progress_placeholder, progress_bar, "👀", "Looking at your picture...", 25)
         try:
+            stage_start = time.perf_counter()
             caption = image2text(image, models["image"])
+            log_stage("image2text", time.perf_counter() - stage_start,
+                      f"({len(caption.split())} words)")
         except Exception:
             progress_placeholder.empty()
             progress_bar.empty()
@@ -800,7 +831,10 @@ def main():
         # Stage 2 - imagine the story.
         render_progress(progress_placeholder, progress_bar, "💭", "Imagining your adventure...", 55)
         try:
+            stage_start = time.perf_counter()
             story = text2story(caption, models["story"])
+            log_stage("text2story", time.perf_counter() - stage_start,
+                      f"({len(story.split())} words)")
         except Exception:
             progress_placeholder.empty()
             progress_bar.empty()
@@ -824,11 +858,16 @@ def main():
         # Stage 3 - read the story out loud.
         render_progress(progress_placeholder, progress_bar, "🎙️", "Giving your story a voice...", 80)
         try:
+            stage_start = time.perf_counter()
             audio, sampling_rate = text2audio(story, models["audio"])
             st.session_state["audio_bytes"] = audio_to_wav_bytes(audio, sampling_rate)
+            log_stage("text2audio", time.perf_counter() - stage_start,
+                      f"({len(audio) if hasattr(audio, '__len__') else 0} samples)")
         except Exception:
             # The story is still perfectly readable without narration.
             st.session_state["audio_bytes"] = None
+
+        log_stage("TOTAL", time.perf_counter() - total_start, "(complete story ready)")
 
         render_progress(progress_placeholder, progress_bar, "🎉", "Your story is ready!", 100)
         progress_placeholder.empty()
