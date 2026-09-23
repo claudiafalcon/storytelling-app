@@ -17,7 +17,7 @@ The application chains three pre-trained models together:
 | Step | What happens | Function | Model |
 |------|--------------|----------|-------|
 | 1 | The picture is described in words | `image2text()` | `Salesforce/blip-image-captioning-large` |
-| 2 | A children's story is written from that description | `text2story()` | `Qwen/Qwen2.5-1.5B-Instruct` |
+| 2 | A children's story is written from that description | `text2story()` | `LiquidAI/LFM2-1.2B` |
 | 3 | The story is turned into speech | `text2audio()` | `facebook/mms-tts-eng` |
 
 The three models were chosen after comparing candidate models in
@@ -93,14 +93,20 @@ On Streamlit Community Cloud the same value goes in
 3. Set the main file to `app.py`.
 4. Deploy.
 
-> **Note on resources.** `Qwen/Qwen2.5-1.5B-Instruct` is a large model.
-> `load_models()` sets no dtype, so the Transformers pipeline applies its
-> default automatic dtype behaviour and loads the model in the precision
-> recorded in the checkpoint configuration (`bfloat16`). The free Community
-> Cloud tier is memory-limited and story generation on CPU takes noticeably
-> longer than on a GPU. If the app runs out of memory, switching
-> `STORY_MODEL` at the top of `app.py` to `Qwen/Qwen2.5-0.5B-Instruct` is
-> the smallest change that fixes it.
+> **Note on performance.** `load_models()` sets no dtype, so the Transformers
+> pipeline applies its default automatic dtype behaviour and loads each model in
+> the precision recorded in its checkpoint configuration.
+>
+> Story generation is CPU-bound. Measured on a Colab CPU runtime, the selected
+> model takes about **63 seconds per story**, compared with about 2 seconds on a
+> GPU. Streamlit Community Cloud runs on CPU and throttles applications that
+> sustain high CPU usage, so the first story may take significantly longer than
+> this, or the app may be throttled during generation.
+>
+> Nine story models were evaluated before selecting this one. Every model below
+> roughly 1B parameters failed at least one hard requirement, producing stories
+> outside the 50-100 word range, incomplete stories, or content not appropriate
+> for children. The full evaluation is documented in `IndividualProyect.ipynb`.
 
 ## Credits
 

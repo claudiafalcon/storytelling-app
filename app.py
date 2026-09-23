@@ -14,7 +14,7 @@ Everything is orchestrated by main() and presented through Streamlit.
 
 Pre-trained models (Hugging Face Transformers pipelines):
     image-to-text   : Salesforce/blip-image-captioning-large
-    text-generation : Qwen/Qwen2.5-1.5B-Instruct
+    text-generation : LiquidAI/LFM2-1.2B
     text-to-speech  : facebook/mms-tts-eng
 """
 
@@ -35,7 +35,7 @@ from transformers import pipeline
 
 # The three models selected during the notebook experimentation stage.
 IMAGE_MODEL = "Salesforce/blip-image-captioning-large"
-STORY_MODEL = "Qwen/Qwen2.5-1.5B-Instruct"
+STORY_MODEL = "LiquidAI/LFM2-1.2B"
 AUDIO_MODEL = "facebook/mms-tts-eng"
 
 # Limits used by the image and story stages.
