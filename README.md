@@ -1,4 +1,4 @@
-# 🦄 Magic Story Maker
+# 🎈 Magic Story Maker
 
 An AI-powered storytelling application for children aged 3–10.
 

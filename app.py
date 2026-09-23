@@ -524,8 +524,9 @@ def apply_styles():
             font-weight: 800;
             color: var(--coral);
             float: left;
-            line-height: .9;
-            padding: .1rem .5rem .1rem 0;
+            line-height: 1;
+            margin: .1rem .85rem .1rem 0;
+            padding: 0;
         }
 
         .story-end {
@@ -609,7 +610,7 @@ def render_header():
     st.markdown(
         """
         <div class="hero">
-            <span class="hero-emoji">🦄</span>
+            <span class="hero-emoji">🎈</span>
             <span class="hero-emoji">📖</span>
             <span class="hero-emoji">✨</span>
             <div class="hero-title">Magic Story Maker</div>
@@ -710,7 +711,7 @@ def main():
     # --- Page setup ------------------------------------------------------
     st.set_page_config(
         page_title="Magic Story Maker",
-        page_icon="🦄",
+        page_icon="🎈",
         layout="centered",
     )
     apply_styles()
