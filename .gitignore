@@ -1,0 +1,30 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Local environments
+.venv/
+venv/
+env/
+ENV/
+
+# Streamlit secrets
+# NOTE: .streamlit/config.toml stays tracked - it holds the app's visual theme
+# and must be deployed with the application.
+.streamlit/secrets.toml
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# Editors
+.vscode/
+.idea/

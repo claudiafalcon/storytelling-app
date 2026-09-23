@@ -1,0 +1,17 @@
+# Web application framework
+streamlit>=1.37
+
+# Hugging Face pre-trained models and pipelines
+transformers==4.57.6
+
+# Deep learning backend used by the transformers pipelines
+torch>=2.2
+
+# Efficient / low-memory model loading used by load_models()
+accelerate>=0.30
+
+# Image handling for the uploaded picture
+pillow>=10.0
+
+# Waveform handling for the narration audio
+numpy>=1.26

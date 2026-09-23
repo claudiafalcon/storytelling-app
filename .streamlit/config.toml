@@ -1,0 +1,11 @@
+# Keeps the storybook colours consistent for every visitor,
+# including people whose browser prefers dark mode.
+[theme]
+base = "light"
+primaryColor = "#ff7a7a"
+backgroundColor = "#fffaf2"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#3d2b56"
+
+[browser]
+gatherUsageStats = false
