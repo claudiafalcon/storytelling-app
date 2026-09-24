@@ -1,5 +1,15 @@
 # 🎈 Magic Story Maker
 
+### ▶️ Live application
+
+## https://storytelling-app-claudiafalcon.streamlit.app/
+
+Deployed on Streamlit Community Cloud. The first story after the application
+wakes up takes about 70 seconds, because the three models are loaded into
+memory; later stories take about 55 seconds.
+
+---
+
 An AI-powered storytelling application for children aged 3–10.
 
 A child uploads a picture, and the application looks at it, invents a short
